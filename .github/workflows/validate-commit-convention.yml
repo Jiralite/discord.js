@@ -16,7 +16,7 @@ jobs:
 
       - name: Validate commit convention
         run: |
-          TITLE=${{ github.event.pull_request.title }}
+          TITLE="${{ github.event.pull_request.title }}"
           REGEX="^(revert: )?(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|types|wip)(\\(.+\\))?: .{1,72}$"
           
           echo "Title: \"$TITLE\""
