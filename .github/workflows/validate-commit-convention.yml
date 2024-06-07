@@ -1,12 +1,10 @@
 name: Validate Commit Convention
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - edited
       - reopened
-permissions:
-  pull-requests: read
 jobs:
   validate:
     name: Validate commit convention
@@ -16,7 +14,7 @@ jobs:
         run: |
           TITLE="${{ github.event.pull_request.title }}"
           REGEX="^(revert: )?(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|types|wip)(\\(.+\\))?: .{1,72}$"
-          
+
           echo "Title: \"$TITLE\""
 
           if [[ ! "$TITLE" =~ $REGEX ]]; then
