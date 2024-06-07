@@ -1,0 +1,28 @@
+name: Validate Commit Convention
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+permissions:
+  pull-requests: read
+jobs:
+  validate:
+    name: Validate commit convention
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate commit convention
+        run: |
+          TITLE=${{ github.event.pull_request.title }}
+          REGEX="^(revert: )?(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|types|wip)(\\(.+\\))?: .{1,72}$"
+          
+          echo "Title: \"$TITLE\""
+
+          if [[ ! "$TITLE" =~ $REGEX ]]; then
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
