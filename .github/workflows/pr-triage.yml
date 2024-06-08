@@ -7,25 +7,28 @@ on:
       - reopened
       - synchronize
 jobs:
-  pr-triage:
-    name: PR Triage
+  label:
+    name: Label
+    if: github.event.action != 'edited'
     runs-on: ubuntu-latest
     steps:
-      - name: Automatically label PR
+      - name: Label pull request
         uses: actions/labeler@v5
-        if: github.event.action != 'edited'
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           sync-labels: true
-
-      - name: Validate commit convention
-        if: github.event.action != 'synchronize'
+  validate-title:
+    name: Validate title
+    if: github.event.action != 'synchronize'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate pull request title
         run: |
-            TITLE="${{ github.event.pull_request.title }}"
-            REGEX="^(revert: )?(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|types|wip)(\\(.+\\))?: .{1,72}$"
-  
-            echo "Title: \"$TITLE\""
-  
-            if [[ ! "$TITLE" =~ $REGEX ]]; then
-              exit 1
-            fi
+          TITLE="${{ github.event.pull_request.title }}"
+          REGEX="^(revert: )?(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|types|wip)(\\(.+\\))?: .{1,72}$"
+
+          echo "Title: \"$TITLE\""
+
+          if [[ ! "$TITLE" =~ $REGEX ]]; then
+            exit 1
+          fi
