@@ -128,8 +128,9 @@ class GuildMemberManager extends CachedManager {
       resolvedOptions.roles = resolvedRoles;
     }
     const data = await this.client.rest.put(Routes.guildMember(this.guild.id, userId), { body: resolvedOptions });
-    // Data is an empty Uint8Array if the member is already part of the guild.
-    return data instanceof Uint8Array
+
+    // Data is an empty array buffer if the member is already part of the guild.
+    return data instanceof ArrayBuffer
       ? options.fetchWhenExisting === false
         ? null
         : this.fetch(userId)
@@ -234,7 +235,7 @@ class GuildMemberManager extends CachedManager {
 
     return new Promise((resolve, reject) => {
       if (!query && !users) query = '';
-      this.guild.shard.send({
+      this.guild.client.ws.send(this.guild.shardId, {
         op: GatewayOpcodes.RequestGuildMembers,
         d: {
           guild_id: this.guild.id,
@@ -503,7 +504,7 @@ class GuildMemberManager extends CachedManager {
   /**
    * Bulk ban users from a guild, and optionally delete previous messages sent by them.
    * @param {Collection<Snowflake, UserResolvable>|UserResolvable[]} users The users to ban
-   * @param {BulkBanOptions} [options] The options for bulk banning users
+   * @param {BanOptions} [options] The options for bulk banning users
    * @returns {Promise<BulkBanResult>} Returns an object with `bannedUsers` key containing the IDs of the banned users
    * and the key `failedUsers` with the IDs that could not be banned or were already banned.
    * Internally calls the GuildBanManager#bulkCreate method.
@@ -534,7 +535,7 @@ class GuildMemberManager extends CachedManager {
    */
   async addRole(options) {
     const { user, role, reason } = options;
-    const userId = this.guild.members.resolveId(user);
+    const userId = this.resolveId(user);
     const roleId = this.guild.roles.resolveId(role);
     await this.client.rest.put(Routes.guildMemberRole(this.guild.id, userId, roleId), { reason });
 
@@ -548,7 +549,7 @@ class GuildMemberManager extends CachedManager {
    */
   async removeRole(options) {
     const { user, role, reason } = options;
-    const userId = this.guild.members.resolveId(user);
+    const userId = this.resolveId(user);
     const roleId = this.guild.roles.resolveId(role);
     await this.client.rest.delete(Routes.guildMemberRole(this.guild.id, userId, roleId), { reason });
 
