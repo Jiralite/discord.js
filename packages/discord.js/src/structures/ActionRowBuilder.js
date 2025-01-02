@@ -6,7 +6,7 @@ const { createComponentBuilder } = require('../util/Components');
 const { toSnakeCase } = require('../util/Transformers');
 
 /**
- * Represents an action row builder.
+ * Represents an action row builder!
  * @extends {BuildersActionRow}
  */
 class ActionRowBuilder extends BuildersActionRow {
