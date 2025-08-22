@@ -121,7 +121,7 @@
   color: 0075ca
 - name: t:bug
   description: Something is not working as expected.
-  color: '000000'
+  color: '870808'
 - name: t:duplicate
   color: cfd3d7
 - name: t:feature request
